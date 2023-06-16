@@ -5,7 +5,11 @@ class Pallete {
   static const Color gradient1 = Color.fromRGBO(187, 63, 221, 1);
   static const Color gradient2 = Color.fromRGBO(251, 109, 169, 1);
   static const Color gradient3 = Color.fromRGBO(255, 159, 124, 1);
+  static const Color gradient4 = Colors.greenAccent;
+  static const Color gradient5 = Colors.green;
   static const Color borderColor = Color.fromRGBO(52, 51, 67, 1);
   static const Color whiteColor = Colors.white;
-  static const LinearGradient customGradient1 =  LinearGradient(colors: [gradient1, gradient2, gradient3],);
+  static const LinearGradient customGradient1 =  LinearGradient(colors: [Color(0xFF9EBD13),
+    Color(0xAA9EEA13),// Start color (#9EBD13)
+    Color(0xFF008552),],);
 }

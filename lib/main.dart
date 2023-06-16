@@ -1,14 +1,8 @@
-import 'package:fablabapp/pages/certification.dart';
 import 'package:fablabapp/pages/login.dart';
-import 'package:fablabapp/pages/member.dart';
-import 'package:fablabapp/pages/sign_up.dart';
-import 'package:fablabapp/pages/skills.dart';
 import 'package:fablabapp/pallete.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,14 +20,5 @@ void main() async {
         ),
       ),
     ),
-      routes: {
-        'login': (context) => const LoginScreen(),
-        //'home':(context) => HomeScreen(user: user,),
-        'skill':(context) => SkillsScreen(),
-        'member':(context) => const MembershipScreen(),
-        'certificates':(context) => const CertificateInputPage(),
-      }
   ));
 }
-
-

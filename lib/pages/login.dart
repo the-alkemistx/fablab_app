@@ -1,20 +1,65 @@
+import 'package:fablabapp/pages/homepage.dart';
 import 'package:fablabapp/pallete.dart';
-import 'package:fablabapp/widgets/google_button.dart';
 import 'package:flutter/material.dart';
 import 'package:fablabapp/widgets/gradient_button.dart';
 import 'package:fablabapp/widgets/login_field.dart';
 import 'package:lottie/lottie.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({Key? key}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  Future<User?> _fetchUser() async {
+    User? user = _auth.currentUser;
+    return user;
+  }
+
+  Future<void> _submitLoginForm() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      try {
+        await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text,
+          password: _passwordController.text,
+        );
+        // Successful login
+        _fetchUser().then(
+              (user) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (context) => Home(user: user),
+              ),
+            );
+          },
+        );
+      } on FirebaseAuthException catch (e) {
+        String errorMessage = 'An error occurred. Please try again.';
+        if (e.code == 'user-not-found') {
+          errorMessage = 'No user found with this email.';
+        } else if (e.code == 'wrong-password') {
+          errorMessage = 'Invalid password.';
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errorMessage),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -23,40 +68,52 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Center(
           child: Column(
             children: [
-              SizedBox(height: 30,),
-              Container(
-                width: 300,
-                height: 300,
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: Lottie.network(
-                    'https://assets7.lottiefiles.com/private_files/lf30_m6j5igxb.json',
-                  ),
-                ),
+              const SizedBox(
+                height: 50,
               ),
-              LoginField(
-                hintText: 'Email',
-                customIcon: Icons.mail,
-                customIconColor: Pallete.whiteColor,
-                controller: emailController,
+              Lottie.asset(
+                'assets/images/93462-login.json',
               ),
-              const SizedBox(height: 15),
-              LoginField(
-                hintText: 'Password',
-                customIcon: Icons.fingerprint_outlined,
-                customIconColor: Pallete.whiteColor,
-                controller: passwordController,
+              const SizedBox(
+                height: 40,
               ),
-              const SizedBox(height: 20),
-              GradientButton(
-                onPressed: () {
-                  final email = emailController.text;
-                  final password = passwordController.text;
-                },
-                hintText: 'Sign in',
-              ),
-              const SizedBox(height:10),
-              GoogleLoginButton(onPressed: () {}),
+              Form(
+                  key: _formKey,
+                  child: Column(children: [
+                    LoginField(
+                      hintText: 'Email',
+                      customIcon: Icons.mail,
+                      customIconColor: Pallete.whiteColor,
+                      controller: _emailController,
+                    ),
+                    const SizedBox(height: 15),
+                    LoginField(
+                      hintText: 'Password',
+                      customIcon: Icons.fingerprint_outlined,
+                      customIconColor: Pallete.whiteColor,
+                      controller: _passwordController,
+                    ),
+                    const SizedBox(height: 20),
+                    GradientButton(
+                      onPressed: () {
+                        _submitLoginForm().then(
+                          (value) {
+                            _fetchUser().then(
+                              (user) {
+                                Navigator.of(context).pushReplacement(
+                                  MaterialPageRoute(
+                                    builder: (context) => Home(user: user),
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                        );
+                      }, // Call the _login function
+                      hintText: 'Sign in',
+                    ),
+                  ])),
+              const SizedBox(height: 10),
             ],
           ),
         ),

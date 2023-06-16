@@ -5,26 +5,37 @@ class LoginField extends StatelessWidget {
   final String hintText;
   final IconData? customIcon;
   final Color? customIconColor;
-  final TextEditingController controller; // Add the TextEditingController parameter
+  final TextEditingController controller;
 
   const LoginField({
     Key? key,
     required this.hintText,
     this.customIcon,
     this.customIconColor,
-    required this.controller, // Initialize the TextEditingController parameter
+    required this.controller,
   }) : super(key: key);
+
+  String? _validateEmail(String value) {
+    if (value.isEmpty) {
+      return 'Email is required.';
+    }
+    if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z0-9-]+)*(\.[a-zA-Z]{2,})$').hasMatch(value)) {
+      return 'Enter a valid email.';
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16), // Add horizontal padding
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ConstrainedBox(
         constraints: const BoxConstraints(
           maxWidth: 400,
         ),
         child: TextFormField(
-          controller: controller, // Assign the provided controller to the TextFormField
+          controller: controller,
+          style: TextStyle(color: Colors.white),
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(27),
             enabledBorder: OutlineInputBorder(
@@ -36,12 +47,15 @@ class LoginField extends StatelessWidget {
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: const BorderSide(
-                color: Pallete.gradient2,
+                color: Pallete.gradient5,
                 width: 3,
               ),
               borderRadius: BorderRadius.circular(10),
             ),
             hintText: hintText,
+            hintStyle: TextStyle(
+              color: Colors.white.withOpacity(0.7),
+            ),
             prefixIcon: customIcon != null
                 ? Icon(
               customIcon,
@@ -49,6 +63,15 @@ class LoginField extends StatelessWidget {
             )
                 : null,
           ),
+          validator: (value) {
+            if (hintText == 'Email') {
+              return _validateEmail(value!);
+            }
+            if (value!.isEmpty) {
+              return 'Password is required.';
+            }
+            return null;
+          },
         ),
       ),
     );
